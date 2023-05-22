@@ -15,13 +15,28 @@ const useField = (type) => {
   }
 }
 
+//Extract the code for communicating with the backend into its own useResource hook. It is sufficient to implement fetching all resources and creating a new resource.
+
+//The useResource custom hook returns an array of two items just like the state hooks
 const useResource = (baseUrl) => {
   const [resources, setResources] = useState([])
 
-  // ...
-
-  const create = (resource) => {
-    // ...
+  useEffect(() => {
+    const getResources = async (baseUrl) => {
+      try {
+        const response = await axios.get(baseUrl)
+        setResources(response.data)
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    if (baseUrl) getResources(baseUrl)
+  }, [baseUrl])
+  
+  const create = async (resource) => {
+    resource.id = Math.round(Math.random() * 10000)
+    const response = await axios.post(baseUrl, resource)
+    setResources(resources.concat(response.data))
   }
 
   const service = {
